@@ -1,10 +1,12 @@
 """
 Django settings for livesofchrist project.
 """
-
+import os
 from pathlib import Path
 import dj_database_url
-import os
+from dotenv import load_dotenv  # <--- THIS IS THE MISSING LINE
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # ADD THIS HERE
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,9 +52,9 @@ MIDDLEWARE = [
 ]
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'your_cloud_name',
-    'API_KEY': 'your_api_key',
-    'API_SECRET': 'your_api_secret'
+    'CLOUD_NAME': 'doioanvap',
+    'API_KEY': '873719818346838',
+    'API_SECRET': '-4ir5FLPcFZiCqn-HuAZcJMYSEc',
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
@@ -79,8 +82,9 @@ WSGI_APPLICATION = 'livesofchrist.wsgi.application'
 # Database
 DATABASES = {
     'default': dj_database_url.config(
-        # This will look for an environment variable named DATABASE_URL
-        default=f'sqlite:///{os.path.join(BASE_DIR, "db.sqlite3")}',
+        # The 'default' is what runs on your PC (SQLite)
+        # The 'DATABASE_URL' from Render will automatically override this in production
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600
     )
 }
@@ -129,3 +133,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
 }
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
